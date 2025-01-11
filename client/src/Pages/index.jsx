@@ -5,6 +5,7 @@ import NotFound from "./NotFound";
 import Product from "./Product";
 import ProductDetails from "./ProductDetails";
 import Profile from "./Profile";
+import Cart from "./Cart";
 
 
-export {About,Auth,Home,NotFound,Product,ProductDetails,Profile}
+export {About,Auth,Home,NotFound,Product,ProductDetails,Profile,Cart}
