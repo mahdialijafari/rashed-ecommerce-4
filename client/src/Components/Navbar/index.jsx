@@ -44,9 +44,9 @@ export default function Navbar() {
         <Button
           variant="text"
           sx={{ color: "white" }}
-          onClick={() => navigate("/product")}
+          onClick={() => navigate("/products/all/all-category")}
         >
-          Product
+          Products
         </Button>
         <Button
           variant="text"
