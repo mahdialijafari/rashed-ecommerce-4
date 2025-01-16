@@ -13,7 +13,7 @@ const cartSlice=createSlice({
             let add=false
             state.totalPrice=state.totalPrice+ +action.payload.price
             state.items=state.items?.map((e)=>{
-                if(e.id==action.payload.id){
+                if(e._id==action.payload._id){
                     e.cartQuantity+=1
                     add=true
                 }
