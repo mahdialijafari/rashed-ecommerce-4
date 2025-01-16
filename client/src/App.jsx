@@ -14,6 +14,7 @@ import { Box, CssBaseline, ThemeProvider } from "@mui/material";
 import { useSelector } from "react-redux";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { darkTheme, lightTheme } from "./Theme";
+import { Toaster } from "react-hot-toast";
 export default function App() {
   const { mode } = useSelector((state) => state.theme);
   const { token } = useSelector((state) => state.auth);
@@ -49,6 +50,7 @@ export default function App() {
         </Routes>
       </Box>
       <Footer />
+      <Toaster/>
     </ThemeProvider>
   );
 }

@@ -27,7 +27,7 @@ export default function Navbar() {
         height: "80px",
       }}
     >
-      <Stack flexDirection={"row"} height={'100%'}>
+      <Stack flexDirection={"row"} alignItems={'center'} height={'100%'}>
         <Typography
           component={"h1"}
           sx={{ fontSize: "24px", lineHeight:'80px', color: theme.palette.text.primary }}
@@ -59,7 +59,8 @@ export default function Navbar() {
           <Button
             variant="contained"
             color="error"
-            onClick={() => dispatch(logout)}
+            onClick={() => dispatch(logout())}
+            sx={{height:'50%',margin:'0 20px'}}
           >
             Logout
           </Button>
