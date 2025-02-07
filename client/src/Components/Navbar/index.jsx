@@ -1,5 +1,5 @@
-import { Badge, Box, Button, FormControl, Input, InputAdornment, InputLabel, Stack, TextField, Typography, useTheme } from "@mui/material";
-import React from "react";
+import { Badge, Box, Button, Divider, FormControl, Input, InputAdornment, InputLabel, Stack, TextField, Typography, useTheme } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { logout } from "../../Store/Slices/AuthSlice";
@@ -11,7 +11,8 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { changeTheme } from "../../Store/Slices/ThemeSlice";
-
+import fetchData from "../../Utils/fetchData";
+import SearchResult from "./SearchResult";
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   width: 62,
@@ -68,13 +69,37 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
     }),
   },
 }));
-
 export default function Navbar() {
   const theme = useTheme();
+  const [searchResult,setSearchResult]=useState()
+  const [searchInp,setSearchInp]=useState()
+
+
   const navigate = useNavigate();
   const { token } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const cartLength=useSelector(state=>state.cart.items).length
+  const handleSearch=async(e)=>{
+    setSearchInp(e.target.value)
+    const response=await fetchData('search',{
+      method:'POST',
+      headers:{
+        'content-type':'application/json'
+      },
+      body:JSON.stringify({query:e.target.value})
+    })
+    setSearchResult(response.data)
+  }
+  useEffect(()=>{
+    window.addEventListener('click',(e)=>{
+      if(!e.target.closest('.searchInp')){
+        setSearchInp('')
+        setSearchResult('')
+      }
+    })
+  },[])
+  const catItem=searchResult?.category?.map((e,index)=><SearchResult id={e._id} img={e.image[0]} title={e.title} type={'category'} key={index}/>)
+  const porItem=searchResult?.product?.map((e,index)=><SearchResult id={e._id} img={e.images[0]} title={e.name} type={'product'} key={index}/>)
   return (
     <Stack
       component={"nav"}
@@ -93,36 +118,37 @@ export default function Navbar() {
       />
         <Typography
           component={"h1"}
-          sx={{ fontSize: "24px", lineHeight:'80px', color: theme.palette.text.primary }}
+          sx={{ fontSize: "24px",lineHeight:'80px', color: theme.palette.text.secondary }}
         >
           Rashed
         </Typography>
         <Button
           variant="text"
-          sx={{ color: "white" }}
           onClick={() => navigate("/")}
+          sx={{ color: "white" }}
         >
           Home
         </Button>
         <Button
           variant="text"
-          sx={{ color: "white" }}
           onClick={() => navigate("/products/all/all-category")}
+          sx={{ color: "white" }}
         >
           Products
         </Button>
         <Button
           variant="text"
-          sx={{ color: "white" }}
           onClick={() => navigate("/about")}
+          sx={{ color: "white" }}
         >
-          About
+          About Us
         </Button>
         {token ? (
           <Button
             variant="contained"
-            color="error"
             onClick={() => dispatch(logout())}
+            color="error"
+            
             sx={{height:'50%',margin:'0 20px'}}
           >
             Logout
@@ -130,20 +156,22 @@ export default function Navbar() {
         ) : (
           <Button
             variant="text"
-            sx={{ color: "white" }}
             onClick={() => navigate("/auth")}
+            sx={{ color: "white" }}
           >
             Login/Register
           </Button>
         )}
       </Stack>
       <Stack height={'100%'} flexDirection={"row"} gap={'10px'} alignItems={'center'}>
-      <Box width={'300px'}>
-      <FormControl sx={{width:'100%'}}>
+      <Box width={'300px'} sx={{position:'relative'}}>
+      <FormControl variant="standard " className="searchInp" sx={{width:'100%'}}>
         <InputLabel htmlFor="input-with-icon-adornment">
           Search
         </InputLabel>
         <Input
+          onChange={handleSearch}
+          value={searchInp}
           id="input-with-icon-adornment"
           startAdornment={
             <InputAdornment position="start">
@@ -152,15 +180,33 @@ export default function Navbar() {
           }
         />
       </FormControl>
+      <Stack sx={{
+        position:'absolute',
+        width:'100%',
+        height:searchInp?'400px':'0px',
+        borderRadius:'0 0 5px 5px',
+        overflowY:'scroll',
+        backgroundColor:'white',
+        zIndex:'1000',
+        transition:'all .5s'
+      }}>
+        <Typography variant="body1" textAlign={'center'}>Categories</Typography>
+        {catItem}
+        <Divider/>
+        <Typography variant="body1" textAlign={'center'}>Products</Typography>
+
+        {porItem}
+      </Stack>
       </Box>
+
         <Link to={'/cart'}>
           <Badge badgeContent={cartLength} color="primary">
-            <ShoppingCartIcon sx={{color:'white'}} />
+              <ShoppingCartIcon sx={{color:'white'}}/>
           </Badge>
         </Link>
         {token && (
           <Link to={"/profile"}>
-            <AccountCircleIcon sx={{color:'white'}}/>
+            <AccountCircleIcon sx={{color:'white'}} />
           </Link>
         )}
       </Stack>
